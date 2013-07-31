@@ -7,19 +7,20 @@ from data_model import LowestFlight
 
 
 class Crawler_quna(object):
-    def __init__(self, url):
-        self.url = url
+    def __init__(self, dep, arr, date=datetime.date.today().isoformat()):
+        self.url = 'http://ws.qunar.com/all_lp.jcp?goDate=%s&from=%s&to=%s&output=json&count=30'
+        self.dep = dep
+        self.arr = arr
+        self.date = date
 
     def start(self):
-        dic = json.loads(urllib2.urlopen(self.url).read())
+        dic = json.loads(urllib2.urlopen(self.url % (self.date, self.dep, self.arr)).read())
         dic = dic['out']
         for ent in dic.viewkeys():
-            LowestFlight(vendor='quna', flightName='', depDate=dic[ent]['dt'], fetchTime=datetime.datetime.now(), price=dic[ent]['pr']).save()
+            #date = re.search(r'([0-9]{4})-([0-9]{2})-([0-9]{2})', dic[ent]['dt'])
+            #LowestFlight(vendor='quna', flightName='', depDate=datetime.date(int(date.group(1)), int(date.group(2)), int(date.group(3))), fetchTime=datetime.datetime.now(), price=dic[ent]['pr']).save()
+            LowestFlight(vendor='quna', dep=self.dep, arr=self.arr, depDate=dic[ent]['dt'], fetchTime=datetime.datetime.now(), price=dic[ent]['pr']).save()
 
-
-def urlGen():
-    return ['http://ws.qunar.com/all_lp.jcp?goDate=2013-08-02&from=北京&to=上海&output=json&count=30']
 
 if __name__ == '__main__':
-    for url in urlGen():
-        Crawler_quna(url).start()
+    Crawler_quna(dep='上海', arr='北京').start()
