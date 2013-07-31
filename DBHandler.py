@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import pymongo
+import sys
 
 class FlightPriceDB(object):
 

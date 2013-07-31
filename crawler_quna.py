@@ -2,7 +2,6 @@
 
 import json
 import urllib2
-import re
 import datetime
 from data_model import LowestFlight
 
@@ -15,11 +14,7 @@ class Crawler_quna(object):
         dic = json.loads(urllib2.urlopen(self.url).read())
         dic = dic['out']
         for ent in dic.viewkeys():
-            LowestFlight(vendor='quna', flightName='', depDate=self.parseDate(ent), fetchTime=datetime.datetime.now(), price=dic[ent]['pr']).save()
-
-    def parseDate(self, text):
-        ret = re.search(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', text)
-        return ret.group(0)
+            LowestFlight(vendor='quna', flightName='', depDate=dic[ent]['dt'], fetchTime=datetime.datetime.now(), price=dic[ent]['pr']).save()
 
 
 def urlGen():
