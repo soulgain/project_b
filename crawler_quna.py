@@ -15,6 +15,7 @@ class Crawler_quna(object):
 
     def start(self):
         dic = json.loads(urllib2.urlopen(self.url % (self.date, self.dep, self.arr)).read())
+        print self.url % (self.date, self.dep, self.arr), ' - OK'
         dic = dic['out']
         for ent in dic.viewkeys():
             #date = re.search(r'([0-9]{4})-([0-9]{2})-([0-9]{2})', dic[ent]['dt'])
