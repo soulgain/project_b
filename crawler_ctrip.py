@@ -20,7 +20,8 @@ class Crawler_ctrip(object):
         try:
             html = urllib2.urlopen(self.url % (g_codeMap[self.dep], g_codeMap[self.arr]), 'html5lib', timeout=30).read()
         except Exception, e:
-            print e,self.dep,self.arr
+            raise e
+            return
         
         print self.url % (g_codeMap[self.dep], g_codeMap[self.arr]), ' - OK'
         soup = BeautifulSoup(html)

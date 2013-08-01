@@ -8,8 +8,16 @@ import source
 
 
 def startTask(dep, arr):
-    crawler_quna.Crawler_quna(dep=dep, arr=arr).start()
-    crawler_ctrip.Crawler_ctrip(dep=dep, arr=arr).start()
+    try:
+        crawler_quna.Crawler_quna(dep=dep, arr=arr).start()
+    except Exception, e:
+        crawler_quna.Crawler_quna(dep=dep, arr=arr).start()
+    
+    try:
+        crawler_ctrip.Crawler_ctrip(dep=dep, arr=arr).start()
+    except Exception, e:
+        crawler_ctrip.Crawler_ctrip(dep=dep, arr=arr).start()
+    
     #crawler_sme.Crawler_sme(dep=dep, arr=arr).start()
 
 
