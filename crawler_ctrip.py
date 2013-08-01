@@ -31,7 +31,7 @@ class Crawler_ctrip(object):
         ret = re.search(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', tagText)
         return ret.group(0)
 
-g_codeMap = {'北京':'BJS', '上海':'SHA'}
+g_codeMap = {'北京':'BJS', '上海':'SHA', '深证':'SZX', '广州':'CAN', '厦门':'XMN', '杭州':'HGH', '重庆':'CKG', '成都':'CTU', '西安':'SIA', '武汉':'WUH'}
 
 if __name__ == '__main__':
     Crawler_ctrip(dep='北京', arr='上海').start()
