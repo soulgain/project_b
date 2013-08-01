@@ -30,4 +30,4 @@ codeMap = {'北京':'BJS', '上海':'SHA', '深圳':'SZX', '广州':'CAN', '厦�
 
 smeCodeMap = {'北京':'BJS', '上海':'SHH', '深圳':'SZX', '广州':'CAN', '厦门':'XMN', '杭州':'HGH', '重庆':'CKG', '成都':'CTU', '西安':'XIA', '武汉':'WUH'}
 
-interval = 10*60
+interval = 60*60

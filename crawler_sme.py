@@ -9,6 +9,7 @@ import source
 import threading
 import time
 
+hostName = 'http://sme.ikamobile.com'
 
 class Crawler_sme(object):
     def __init__(self, dep, arr):
@@ -20,10 +21,11 @@ class Crawler_sme(object):
         delta = datetime.timedelta(days=1)
         days = 90
         current = 0
+        threadLimit = 10
         threadList = []
         while current <= days:
             print current
-            if threading.active_count() < 7:
+            if threading.active_count() < threadLimit:
                 ct = CrawlerThread(self.dep, self.arr, date.isoformat())
                 threadList.append(ct)
                 ct.start()
@@ -36,7 +38,7 @@ class Crawler_sme(object):
             if t.is_alive():
                 print t
                 t.join()
-                print over
+                print 'over'
 
 
 class CrawlerThread(threading.Thread):
@@ -44,20 +46,34 @@ class CrawlerThread(threading.Thread):
         threading.Thread.__init__(self)
         self.dep = dep
         self.arr = arr
-        self.url = 'http://dev.ikamobile.com:8020/sme/employee/login.json'
+        self.url = hostName + '/sme/employee/login.json'
         self.opener = None
         self.date = date
         self.daemon = True
 
     def run(self):
-        self.login()
-        url = 'http://dev.ikamobile.cn:8020/sme/flight.json?depCityCode=%s&arrCityCode=%s&depDate=%s&clientPlatformName=iPhone' % (source.smeCodeMap[self.dep], source.smeCodeMap[self.arr], self.date)
-        doc = self.opener.open(url).read()
+        try:
+            if self.login() == False:
+                return
+        except Exception, e:
+            print e
+            return
+        
+        url = hostName + '/sme/flight.json?depCityCode=%s&arrCityCode=%s&depDate=%s&clientPlatformName=iPhone' % (source.smeCodeMap[self.dep], source.smeCodeMap[self.arr], self.date)
+        try:
+            doc = self.opener.open(url, timeout=30).read()
+        except Exception, e:
+            if cmp(repr(e), 'timed out') == 0:
+                self.run()
+            else:
+                return
+        
         jsonDic = json.loads(doc)
         priceList = []
         if cmp(jsonDic['code'], '0') == 0:
             for flight in jsonDic['data']['flights']:
                 priceList.append(int(flight['lowestAdultCabinPrice']['ticketPrice']))
+
         price = self.lowestPrice(priceList)
         LowestFlight(dep=self.dep, arr=self.arr, fetchTime=datetime.datetime.now(), depDate=self.date, vendor='sme', price=str(price)).save()
 
@@ -69,14 +85,22 @@ class CrawlerThread(threading.Thread):
         return lowest
 
     def login(self):
-        url = 'http://dev.ikamobile.cn:8020/sme/employee/login.json'
+        url = hostName + '/sme/employee/login.json'
         req = urllib2.Request(url)
-        para = urllib.urlencode({'loginName':'15828545250', 'pwd':'000000', 'clientPlatformName':'iPhone'})
+        para = urllib.urlencode({'loginName':'15198065309', 'pwd':'111111', 'clientPlatformName':'iPhone'})
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
-        ret = self.opener.open(req, para)
+        ret = None
+        try:
+            ret = self.opener.open(req, para, timeout=30)
+        except Exception, e:
+            if cmp(repr(e), 'timed out') == 0:
+                self.login()
+        jsonDic = json.loads(ret.read())
+        if cmp(jsonDic['code'], '0') != 0:
+            return False
+        
         #print ret.read()
 
 
 if __name__ == '__main__':
-    sme = Crawler_sme(dep='上海', arr='北京')
-    sme.start()
+    Crawler_sme(dep='上海', arr='北京').start()
