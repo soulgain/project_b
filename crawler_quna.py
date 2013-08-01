@@ -8,7 +8,7 @@ from data_model import LowestFlight
 
 class Crawler_quna(object):
     def __init__(self, dep, arr, date=datetime.date.today().isoformat()):
-        self.url = 'http://ws.qunar.com/all_lp.jcp?goDate=%s&from=%s&to=%s&output=json&count=30'
+        self.url = 'http://ws.qunar.com/all_lp.jcp?goDate=%s&from=%s&to=%s&output=json&count=90'
         self.dep = dep
         self.arr = arr
         self.date = date

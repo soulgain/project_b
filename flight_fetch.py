@@ -7,11 +7,12 @@ import source
 
 
 def startTask(dep, arr):
-    while True:
-        crawler_quna.Crawler_quna(dep=dep, arr=arr).start()
-        crawler_ctrip.Crawler_ctrip(dep=dep, arr=arr).start()
-        time.sleep(10*60)
+    crawler_quna.Crawler_quna(dep=dep, arr=arr).start()
+    crawler_ctrip.Crawler_ctrip(dep=dep, arr=arr).start()
+
 
 if __name__ == '__main__':
-    for task in source.tasks:
-        startTask(dep=task['dep'], arr=task['arr'])
+    while True:
+        for task in source.tasks:
+            startTask(dep=task['dep'], arr=task['arr'])
+        time.sleep(source.interval)
